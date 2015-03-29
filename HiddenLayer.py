@@ -69,7 +69,7 @@ class HiddenLayer(object):
             W_values = numpy.asarray(
                 rng.uniform(
                     low=-numpy.sqrt(6. / (n_in + n_out)),
-                    high=unmpy.sqrt(6. / (n_in + n_out)),
+                    high=numpy.sqrt(6. / (n_in + n_out)),
                     size=(n_in, n_out)
                 ),
                 dtype=theano.config.floatX
@@ -93,4 +93,8 @@ class HiddenLayer(object):
         )
         # parameters of the model
         self.params = [self.W, self.b]
+
+
+if __name__ == '__main__':
+    HiddenLayer()
 
