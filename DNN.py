@@ -11,7 +11,7 @@ import theano.tensor as T
 from HiddenLayer import HiddenLayer
 
 class DNN(object):
-	def __init__(self, rng=numpy.random.RandomState(1234), input=None, n_in=69, n_out=48, n_hidden=128, layer=1, activation=None):
+	def __init__(self, rng=numpy.random.RandomState(1234), input=None, n_in=69, n_out=48, n_hidden=128, layer=2, activation=None):
 	
 		"""
 		:type rng: numpy.random.RandomState
@@ -46,11 +46,11 @@ class DNN(object):
 				n_out = 128 if i!= layer else 48,
 				activation = T.tanh if i!= layer else None
 			))
-			print "n_in:{0} n_out:{1}".format(
-			69 if i==0 else n_hidden,
-			128 if i!= layer else 48)
 		#for i in self.MLP:
-		#	print i.output.eval()
+		demo = self.MLP[layer].output.eval()
+		if demo.shape != (48,):
+			print "!!:{}".format(demo.shape)
+		print "---------------------------"
 
 if __name__ == '__main__':
 	DNN() 
