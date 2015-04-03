@@ -15,7 +15,8 @@ import theano.tensor as T
 from HiddenLayer import HiddenLayer
 from DNN import DNN
 
-file = open('new_train.ark','r')
+file_ark = open('new_train.ark','r')
+file_lab = open('new_train.lab','r')
 
 n_in = 69
 n_hidden = 128
@@ -29,15 +30,28 @@ dnn = DNN(
 	n_in = 69,
 	n_out = 48,
 	n_hidden = 128,
-	layer = 5,
+	layer = 5, #4 hidden layers
 	activation = T.tanh
 )
 
-for line in file:
-	X = line.split()
-	X = map(float, X[1:])
-	Y = numpy.asarray(X)
-	dnn.forward(Y)
-	print Y.shape
-	#print hiddenLayer.output.eval()
+'''
+label_dict = {}
+for line in file_lab:
+    X = line.split(',')
+    label_dict.update({X[0]: int(X[1])})
+print label_dict
+'''
+for line in file_ark:
+    X = line.split()
+    X = map(float, X[1:])
+    Y = numpy.asarray(X)
+    dnn.forward(Y)
+    dnn.forward(Y)
+    
+    dnn.backward(numpy.zeros((1,48),dtype=theano.config.floatX))
+    #print hiddenLayer.output.eval()
+
+    
+    
+
 

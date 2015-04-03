@@ -52,8 +52,6 @@ class HiddenLayer(object):
         """
 	self.n_in = n_in
 	self.n_out = n_out
-	self.W = W
-	self.b = b
 	self.activation = activation
         if W is None:
             W_values = numpy.asarray(
@@ -78,10 +76,15 @@ class HiddenLayer(object):
         # parameters of the model
         self.params = [self.W, self.b]
     
-    def update(self, W=None, b=None):	
-	self.W = W
-	self.b = b
+    def update(self, learning_rate, W_update=None, b_update=None):	
+        print W_update.shape
+        print b_update.shape
+        print self.W.eval().shape
+        print self.b.eval().shape
+	self.W = self.W + learning_rate*W_update
+	self.b = self.b + learning_rate*b_update
 	self.params = [self.W, self.b]
+        print self.params
     def compute(self, input):
 	lin_output = T.dot(input, self.W) + self.b
 	self.output = (

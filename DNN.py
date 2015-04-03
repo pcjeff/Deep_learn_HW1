@@ -8,6 +8,7 @@ import numpy
 
 import theano
 import theano.tensor as T
+from theano import function
 from HiddenLayer import HiddenLayer
 
 class DNN(object):
@@ -53,9 +54,24 @@ class DNN(object):
 			self.MLP[i].compute(input = input if i==0 else self.MLP[i-1].output)
 		demo = self.MLP[self.layer].output.eval()
 		print "shape:{}".format(demo.shape)
-		print demo
+		#print demo
 		
-	#def backward(self,input):
+	def backward(self, answer):
+            z = T.dvector('z')
+            cost = T.sum((T.nnet.softmax(z) - answer)**2)#  sum of  ( softmax(output array) )^2 
+
+            cost_grad = function([z], T.grad(cost,z))
+            cost = function([z], cost)
+            
+            dnn_output = self.MLP[self.layer].output.eval()
+            last_delta = cost_grad(dnn_output)# the delta of the last layer
+
+            #    last layer
+            self.MLP[self.layer].update(
+                0.1,
+numpy.transpose(T.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.eval().reshape(1,128)).eval()),                last_delta)
+            
+            
 if __name__ == '__main__':
 	DNN() 
 
