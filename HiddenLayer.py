@@ -65,28 +65,29 @@ class HiddenLayer(object):
             if activation == theano.tensor.nnet.sigmoid:
                 W_values *= 4
 
-            W = theano.shared(value=W_values, name='W', borrow=True)
+            #W = theano.shared(value=W_values, name='W', borrow=True)
 
         if b is None:
             b_values = numpy.zeros((n_out,), dtype=theano.config.floatX)
-            b = theano.shared(value=b_values, name='b', borrow=True)
+            #b = theano.shared(value=b_values, name='b', borrow=True)
 
-        self.W = W
-        self.b = b
+        self.W = W_values
+        self.b = b_values
         # parameters of the model
         self.params = [self.W, self.b]
     
-    def update(self, learning_rate, W_update=None, b_update=None):	
-        print W_update.shape
-        print b_update.shape
-        print self.W.eval().shape
-        print self.b.eval().shape
+    def update(self, learning_rate, W_update=None, b_update=None):
+        #print 'W:{}'.format(self.W.shape)
+        #print 'W_update:{}'.format(W_update.shape)
+        #print 'b:{}'.format(self.b.shape)
+        #print 'b_update:{}'.format(b_update.shape)
 	self.W = self.W + learning_rate*W_update
 	self.b = self.b + learning_rate*b_update
-	self.params = [self.W, self.b]
-        print self.params
+        print 'W:{}'.format(self.W.shape)
+        print 'b:{}'.format(self.b.shape)
     def compute(self, input):
 	lin_output = T.dot(input, self.W) + self.b
+        self.lin_output = lin_output
 	self.output = (
 		lin_output if self.activation is None
 		else self.activation(lin_output)

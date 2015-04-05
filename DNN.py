@@ -42,7 +42,7 @@ class DNN(object):
 		self.n_hidden = n_hidden
 		self.layer = layer
 		self.MLP = []
-		for i in range(layer+1):
+		for i in range(0,layer+1):
 			self.MLP.append(HiddenLayer(
 				rng = rng,
 				n_in = 69 if i==0 else n_hidden,
@@ -52,26 +52,41 @@ class DNN(object):
 	def forward(self,input):
 		for i in range(self.layer+1):
 			self.MLP[i].compute(input = input if i==0 else self.MLP[i-1].output)
-		demo = self.MLP[self.layer].output.eval()
-		print "shape:{}".format(demo.shape)
+		#demo = self.MLP[self.layer].output.eval()
+		#print "shape:{}".format(demo.shape)
 		#print demo
 		
-	def backward(self, answer):
+	def backward(self, input, answer):
             z = T.dvector('z')
+            x = T.dscalar('x')
             cost = T.sum((T.nnet.softmax(z) - answer)**2)#  sum of  ( softmax(output array) )^2 
+            activation = T.tanh(x)
 
-            cost_grad = function([z], T.grad(cost,z))
+            cost_grad = function([z], T.grad(cost, z))
+            tanh_grad = function([x], T.grad(activation, x))
+            #need to input the list of z_i, and turn the output into array
             cost = function([z], cost)
             
             dnn_output = self.MLP[self.layer].output.eval()
+            print 'dnn_outut shape:{}'.format(dnn_output.shape)
             last_delta = cost_grad(dnn_output)# the delta of the last layer
-
-            #    last layer
+            #  update  last layer
+            print 'fuck' 
             self.MLP[self.layer].update(
                 0.1,
 numpy.transpose(T.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.eval().reshape(1,128)).eval()),                last_delta)
-            
-            
+            for i in range(self.layer-1, -1, -1):
+                out = self.MLP[i+1].n_out
+                delta_W = T.dot(last_delta.reshape(1, out), numpy.transpose(self.MLP[i+1].W))#array of delta * W
+                pa_pz = numpy.asarray(map(tanh_grad, self.MLP[i].lin_output.eval()))#array of partial a / partial z
+                last_delta = numpy.asarray([a*b for a,b in zip(delta_W.eval(), pa_pz.reshape(1,128))])
+                self.MLP[i].update(
+                        0.1,
+                        T.dot(self.MLP[i-1].output.eval().reshape(128, 1) if i!=0 else input.reshape(69,1), 
+                        last_delta.reshape(1, 128)).eval(),
+                        last_delta.reshape(128,1))
+            print 'over'
+
 if __name__ == '__main__':
 	DNN() 
 

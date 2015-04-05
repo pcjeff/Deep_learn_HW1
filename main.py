@@ -30,7 +30,7 @@ dnn = DNN(
 	n_in = 69,
 	n_out = 48,
 	n_hidden = 128,
-	layer = 5, #4 hidden layers
+        layer = 5, #6 layers : 5 hidden layers 1 output layer
 	activation = T.tanh
 )
 
@@ -46,9 +46,8 @@ for line in file_ark:
     X = map(float, X[1:])
     Y = numpy.asarray(X)
     dnn.forward(Y)
-    dnn.forward(Y)
     
-    dnn.backward(numpy.zeros((1,48),dtype=theano.config.floatX))
+    dnn.backward(Y, numpy.zeros((1,48),dtype=theano.config.floatX))
     #print hiddenLayer.output.eval()
 
     
