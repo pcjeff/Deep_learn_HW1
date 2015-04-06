@@ -71,10 +71,11 @@ class DNN(object):
             print 'dnn_outut shape:{}'.format(dnn_output.shape)
             last_delta = cost_grad(dnn_output)# the delta of the last layer
             #  update  last layer
-            print 'fuck' 
             self.MLP[self.layer].update(
                 0.1,
-numpy.transpose(T.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.eval().reshape(1,128)).eval()),                last_delta)
+numpy.transpose(T.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.eval().reshape(1,128)).eval()),                last_delta.reshape(48,))
+
+            #update layer-1 ~ 0
             for i in range(self.layer-1, -1, -1):
                 out = self.MLP[i+1].n_out
                 delta_W = T.dot(last_delta.reshape(1, out), numpy.transpose(self.MLP[i+1].W))#array of delta * W
@@ -84,7 +85,7 @@ numpy.transpose(T.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.ev
                         0.1,
                         T.dot(self.MLP[i-1].output.eval().reshape(128, 1) if i!=0 else input.reshape(69,1), 
                         last_delta.reshape(1, 128)).eval(),
-                        last_delta.reshape(128,1))
+                        last_delta.reshape(128))
             print 'over'
 
 if __name__ == '__main__':

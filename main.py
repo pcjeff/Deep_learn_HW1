@@ -41,14 +41,15 @@ for line in file_lab:
     label_dict.update({X[0]: int(X[1])})
 print label_dict
 '''
+i=0
 for line in file_ark:
     X = line.split()
     X = map(float, X[1:])
     Y = numpy.asarray(X)
     dnn.forward(Y)
-    
+    i = i+1
     dnn.backward(Y, numpy.zeros((1,48),dtype=theano.config.floatX))
-    #print hiddenLayer.output.eval()
+    print '-----------------{}--------------------'.format(i)
 
     
     
