@@ -40,17 +40,27 @@ for line in file_lab:
 
 L = numpy.zeros((48,),dtype=theano.config.floatX)
 i=0
+error = 0
+total = 1124823
+part = 0
+
 for line in file_ark:
     X = line.split()
     X = map(float, X[1:])
     Y = numpy.asarray(X)
     L[label[i]] = 1
-    dnn.forward(Y)
+
+    if dnn.forward(Y) != L.argmax():
+        error = error + 1
     dnn.backward(Y, L)
+    
     L[label[i]] = 0
     i = i+1
+    if i/total > 0.1:
+        print '{}...Ein:{}'.format(part, error/i)
+        i=0
+        part = part + 1
     print '-----------------{}--------------------'.format(i)
-    
     
 
 

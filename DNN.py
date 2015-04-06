@@ -52,9 +52,7 @@ class DNN(object):
 	def forward(self,input):
 		for i in range(self.layer+1):
 			self.MLP[i].compute(input = input if i==0 else self.MLP[i-1].output)
-		#demo = self.MLP[self.layer].output.eval()
-		#print "shape:{}".format(demo.shape)
-		#print demo
+		return self.MLP[self.layer].output.eval().argmax()
 		
 	def backward(self, input, answer):
             z = T.dvector('z')
@@ -68,12 +66,12 @@ class DNN(object):
             cost = function([z], cost)
             
             dnn_output = self.MLP[self.layer].output.eval()
-            print 'dnn_outut shape:{}'.format(dnn_output.shape)
             last_delta = cost_grad(dnn_output)# the delta of the last layer
             #  update  last layer
             self.MLP[self.layer].update(
                 0.1,
-numpy.transpose(T.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.eval().reshape(1,128)).eval()),                last_delta.reshape(48,))
+            numpy.transpose(T.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.eval().reshape(1,128)).eval()),      
+            last_delta.reshape(48,))
 
             #update layer-1 ~ 0
             for i in range(self.layer-1, -1, -1):
@@ -86,7 +84,7 @@ numpy.transpose(T.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.ev
                         T.dot(self.MLP[i-1].output.eval().reshape(128, 1) if i!=0 else input.reshape(69,1), 
                         last_delta.reshape(1, 128)).eval(),
                         last_delta.reshape(128))
-            print 'over'
+
 
 if __name__ == '__main__':
 	DNN() 

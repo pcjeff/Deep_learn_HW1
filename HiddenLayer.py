@@ -79,9 +79,9 @@ class HiddenLayer(object):
     def update(self, learning_rate, W_update=None, b_update=None):
         #print 'output: {}'.format(self.output.eval().shape)
         #print 'before W:{}'.format(self.W.shape)
-        #print 'W_update:{}'.format(W_update.shape)
+        #print 'W_update:\n{}'.format(W_update)
         #print 'before b:{}'.format(self.b.shape)
-        #print 'b_update:{}'.format(b_update.shape)
+        #print 'b_update:\n{}'.format(b_update)
 	self.W = self.W + learning_rate*W_update
 	self.b = self.b + learning_rate*b_update
         #print 'after W:{}'.format(self.W.shape)
