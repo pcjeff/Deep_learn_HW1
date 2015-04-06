@@ -1,8 +1,5 @@
 '''
 Only read the data as input here
-
-
-
 '''
 import os
 import sys
@@ -30,27 +27,29 @@ dnn = DNN(
 	n_in = 69,
 	n_out = 48,
 	n_hidden = 128,
-        layer = 5, #6 layers : 5 hidden layers 1 output layer
+        layer = 2, #N layers : N hidden layers 1 output layer
 	activation = T.tanh
 )
 
-'''
-label_dict = {}
+label = []
 for line in file_lab:
     X = line.split(',')
-    label_dict.update({X[0]: int(X[1])})
-print label_dict
-'''
+    label.append(int(X[1]))
+
+
+
+L = numpy.zeros((48,),dtype=theano.config.floatX)
 i=0
 for line in file_ark:
     X = line.split()
     X = map(float, X[1:])
     Y = numpy.asarray(X)
+    L[label[i]] = 1
     dnn.forward(Y)
+    dnn.backward(Y, L)
+    L[label[i]] = 0
     i = i+1
-    dnn.backward(Y, numpy.zeros((1,48),dtype=theano.config.floatX))
     print '-----------------{}--------------------'.format(i)
-
     
     
 

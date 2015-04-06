@@ -77,15 +77,15 @@ class HiddenLayer(object):
         self.params = [self.W, self.b]
     
     def update(self, learning_rate, W_update=None, b_update=None):
-        print 'output: {}'.format(self.output.eval().shape)
-        print 'before W:{}'.format(self.W.shape)
-        print 'W_update:{}'.format(W_update.shape)
-        print 'before b:{}'.format(self.b.shape)
-        print 'b_update:{}'.format(b_update.shape)
+        #print 'output: {}'.format(self.output.eval().shape)
+        #print 'before W:{}'.format(self.W.shape)
+        #print 'W_update:{}'.format(W_update.shape)
+        #print 'before b:{}'.format(self.b.shape)
+        #print 'b_update:{}'.format(b_update.shape)
 	self.W = self.W + learning_rate*W_update
 	self.b = self.b + learning_rate*b_update
-        print 'after W:{}'.format(self.W.shape)
-        print 'afterb:{}'.format(self.b.shape)
+        #print 'after W:{}'.format(self.W.shape)
+        #print 'afterb:{}'.format(self.b.shape)
     def compute(self, input):
 	lin_output = T.dot(input, self.W) + self.b
         self.lin_output = lin_output
