@@ -62,7 +62,7 @@ class DNN(object):
 	def forward(self,input):
 		for i in range(self.layer+1):
 			self.MLP[i].compute(input = input if i==0 else self.MLP[i-1].output)
-		#return self.MLP[self.layer].output.eval().argmax()
+		return self.MLP[self.layer].output.argmax()
 		
 	def backward(self, input, answer):
             dnn_output = self.MLP[self.layer].output

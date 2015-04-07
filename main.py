@@ -38,6 +38,7 @@ total = 1124823 - 4823
 for line in file_lab:
     X = line.split(',')
     label.append(int(X[1]))
+
 for i in range(total):
     line = file_ark.readline()
     X = line.split()
@@ -58,7 +59,6 @@ for Y in ark:
     if dnn.forward(Y.reshape(1, 69)) != L.argmax():
         error = error + 1
     dnn.backward(Y, L)
-
     L[label[i]] = 0
     i = i+1
     if i%10000 == 0:
