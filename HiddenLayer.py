@@ -24,7 +24,7 @@ import theano.tensor as T
 # start-snippet-1
 class HiddenLayer(object):
     def __init__(self, rng, n_in, n_out, W=None, b=None,
-                 activation=T.tanh):
+                 activation=numpy.tanh):
         """
         Typical hidden layer of a MLP: units are fully-connected and have
         sigmoidal activation function. Weight matrix W is of shape (n_in,n_out)
@@ -54,7 +54,7 @@ class HiddenLayer(object):
 	self.n_out = n_out
 	self.activation = activation
         if W is None:
-            W_values = numpy.asarray(
+            W_values = numpy.array(
                 rng.uniform(
                     low=-numpy.sqrt(6. / (n_in + n_out)),
                     high=numpy.sqrt(6. / (n_in + n_out)),
@@ -62,14 +62,9 @@ class HiddenLayer(object):
                 ),
                 dtype=theano.config.floatX
             )
-            if activation == theano.tensor.nnet.sigmoid:
-                W_values *= 4
-
-            #W = theano.shared(value=W_values, name='W', borrow=True)
 
         if b is None:
             b_values = numpy.zeros((n_out,), dtype=theano.config.floatX)
-            #b = theano.shared(value=b_values, name='b', borrow=True)
 
         self.W = W_values
         self.b = b_values
@@ -77,17 +72,12 @@ class HiddenLayer(object):
         self.params = [self.W, self.b]
     
     def update(self, learning_rate, W_update=None, b_update=None):
-        #print 'output: {}'.format(self.output.eval().shape)
-        #print 'before W:{}'.format(self.W.shape)
-        #print 'W_update:\n{}'.format(W_update)
-        #print 'before b:{}'.format(self.b.shape)
-        #print 'b_update:\n{}'.format(b_update)
+        start_ = time.time()
 	self.W = self.W + learning_rate*W_update
 	self.b = self.b + learning_rate*b_update
-        #print 'after W:{}'.format(self.W.shape)
-        #print 'afterb:{}'.format(self.b.shape)
+        end_ = time.time()
     def compute(self, input):
-	lin_output = T.dot(input, self.W) + self.b
+	lin_output = numpy.dot(input, self.W) + self.b
         self.lin_output = lin_output
 	self.output = (
 		lin_output if self.activation is None
