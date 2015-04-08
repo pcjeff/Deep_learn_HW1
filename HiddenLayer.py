@@ -71,10 +71,10 @@ class HiddenLayer(object):
         # parameters of the model
         self.params = [self.W, self.b]
     
-    def update(self, learning_rate, W_update=None, b_update=None):
+    def update(self, momentum, learning_rate, W_update=None, b_update=None):
         start_ = time.time()
-	self.W = self.W + learning_rate*W_update
-	self.b = self.b + learning_rate*b_update
+	self.W = momentum*self.W + learning_rate*W_update
+	self.b = momentum*self.b + learning_rate*b_update
         end_ = time.time()
     def compute(self, input):
 	lin_output = numpy.dot(input, self.W) + self.b

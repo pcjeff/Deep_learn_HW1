@@ -27,7 +27,7 @@ dnn = DNN(
 	n_in = 69,
 	n_out = 48,
 	n_hidden = 128,
-        layer = 2, #N layers : N hidden layers 1 output layer
+        layer = 1, #N layers : N hidden layers 1 output layer
 	activation = numpy.tanh
 )
 
@@ -35,17 +35,17 @@ ark = []
 label = []
 total = 1124823 - 4823
 
+print 'start reading'
 for line in file_lab:
     X = line.split(',')
     label.append(int(X[1]))
-
 for i in range(total):
     line = file_ark.readline()
     X = line.split()
     X = map(float, X[1:])
     Y = numpy.array(X)
     ark.append(Y)
-
+print 'end reading'
 file_lab.close()
 file_ark.close()
 
@@ -53,19 +53,24 @@ L = numpy.zeros((48,),dtype=theano.config.floatX)
 i=0
 error = 0
 part = 0
+cost = numpy.zeros(1)
 
+print 'start'
 for Y in ark:
-    L[label[i]] = 1
+    L[label[i]-1] = 1
     if dnn.forward(Y.reshape(1, 69)) != L.argmax():
         error = error + 1
-    dnn.backward(Y, L)
-    L[label[i]] = 0
+    
+    cost = cost + dnn.backward(Y, numpy.array(L))
+    L[label[i]-1] = 0
     i = i+1
     if i%10000 == 0:
-        print '{}...Ein:{}'.format(part, error/10000)
+        print '{}...Ein:{}/10000'.format(part, error)
+        print '...Cost:{}...'.format((cost)/10000)
         part = part + 1
         error = 0
+        cost = numpy.zeros(1)
     #print '-----------------{}--------------------'.format(i)
-    
+print 'end'
 
 
