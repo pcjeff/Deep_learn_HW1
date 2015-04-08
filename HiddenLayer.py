@@ -58,7 +58,7 @@ class HiddenLayer(object):
                 rng.uniform(
                     low=-numpy.sqrt(6. / (n_in + n_out)),
                     high=numpy.sqrt(6. / (n_in + n_out)),
-                    size=(n_in, n_out)
+                    size=(n_out, n_in)
                 ),
                 dtype=theano.config.floatX
             )
@@ -77,7 +77,7 @@ class HiddenLayer(object):
 	self.b = momentum*self.b + learning_rate*b_update
         end_ = time.time()
     def compute(self, input):
-	lin_output = numpy.dot(input, self.W) + self.b
+	lin_output = numpy.dot(self.W, input) + self.b
         self.lin_output = lin_output
 	self.output = (
 		lin_output if self.activation is None

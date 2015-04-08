@@ -17,7 +17,7 @@ tanh_grad = function([x], T.grad(activation, x))
 
 z = T.dvector('z')
 ans = T.dvector('ans')
-cost = T.sum((T.nnet.softmax(z) - ans)**2)#  sum of  ( softmax(output array) )^2 
+cost = T.sum(((z/T.sqrt(T.sum(z**2))) - ans)**2)#  sum of  ( softmax(output array) )^2 
 cost_grad = function([z,ans], T.grad(cost, z))
 #need to input the list of z_i, and turn the output into array
             
@@ -70,20 +70,20 @@ class DNN(object):
             #  update  last layer
             self.MLP[self.layer].update(
                 0.1,
-            numpy.transpose(numpy.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.reshape(1,128))),      
+            numpy.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.reshape(1,128)),      
             last_delta.reshape(48))
 
             #update layer-1 ~ 0
             for i in range(self.layer-1, -1, -1):
 
                 out = self.MLP[i+1].n_out
-                delta_W = numpy.dot(last_delta.reshape(1, out), numpy.transpose(self.MLP[i+1].W))#array of delta * W
+                W_delta = numpy.dot(numpy.transpose(self.MLP[i+1].W), last_delta.reshape(out, 1))#array of delta * W
                 pa_pz = numpy.array(map(tanh_grad, self.MLP[i].lin_output.reshape(self.MLP[i].n_out).tolist()))#array of partial a / partial z
-                last_delta = numpy.array([a*b for a,b in zip(delta_W, pa_pz.reshape(1,128))])
+                last_delta = numpy.array([a*b for a,b in zip(W_delta, pa_pz.reshape(128, 1))])
                 self.MLP[i].update(
                         0.1,
-                        numpy.dot(self.MLP[i-1].output.reshape(128, 1) if i!=0 else input.reshape(69,1), 
-                        last_delta.reshape(1, 128)),
+                        numpy.dot(last_delta.reshape(128,1),
+                        self.MLP[i-1].output.reshape(1, 128) if i!=0 else input.reshape(1,69)),
                         last_delta.reshape(128))
                 
 if __name__ == '__main__':

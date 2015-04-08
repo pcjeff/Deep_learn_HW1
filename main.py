@@ -58,7 +58,7 @@ cost = numpy.zeros(1)
 print 'start'
 for Y in ark:
     L[label[i]-1] = 1
-    if dnn.forward(Y.reshape(1, 69)) != L.argmax():
+    if dnn.forward(Y.reshape(69, 1)) != L.argmax():
         error = error + 1
     
     cost = cost + dnn.backward(Y, numpy.array(L))
