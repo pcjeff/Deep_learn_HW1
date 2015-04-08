@@ -64,7 +64,7 @@ class HiddenLayer(object):
             )
 
         if b is None:
-            b_values = numpy.zeros((n_out,), dtype=theano.config.floatX)
+            b_values = numpy.zeros((n_out, 1), dtype=theano.config.floatX)
 
         self.W = W_values
         self.b = b_values
@@ -72,10 +72,8 @@ class HiddenLayer(object):
         self.params = [self.W, self.b]
     
     def update(self, momentum, learning_rate, W_update=None, b_update=None):
-        start_ = time.time()
 	self.W = momentum*self.W + learning_rate*W_update
 	self.b = momentum*self.b + learning_rate*b_update
-        end_ = time.time()
     def compute(self, input):
 	lin_output = numpy.dot(self.W, input) + self.b
         self.lin_output = lin_output

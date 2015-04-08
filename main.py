@@ -54,23 +54,23 @@ i=0
 error = 0
 part = 0
 cost = numpy.zeros(1)
+max_epoch = 3
 
 print 'start'
-for Y in ark:
-    L[label[i]-1] = 1
-    if dnn.forward(Y.reshape(69, 1)) != L.argmax():
-        error = error + 1
-    
-    cost = cost + dnn.backward(Y, numpy.array(L))
-    L[label[i]-1] = 0
-    i = i+1
-    if i%10000 == 0:
-        print '{}...Ein:{}/10000'.format(part, error)
-        print '...Cost:{}...'.format((cost)/10000)
-        part = part + 1
-        error = 0
-        cost = numpy.zeros(1)
-    #print '-----------------{}--------------------'.format(i)
+for epoch in range(max_epoch):
+    for Y in ark:
+        L[label[i]-1] = 1
+        if dnn.forward(Y.reshape(69, 1)) != L.argmax():
+            error = error + 1
+        cost = cost + dnn.backward(Y, numpy.array(L))
+        L[label[i]-1] = 0
+        i = i+1
+        if i%10000 == 0:
+            print '{}...Ein:{}/10000'.format(part, error)
+            print '...Cost:{}...'.format((cost)/10000)
+            part = part + 1
+            error = 0
+            cost = numpy.zeros(1)
 print 'end'
 
 

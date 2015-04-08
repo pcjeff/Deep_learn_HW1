@@ -18,9 +18,14 @@ tanh_grad = function([x], T.grad(activation, x))
 z = T.dvector('z')
 ans = T.dvector('ans')
 cost = T.sum(((z/T.sqrt(T.sum(z**2))) - ans)**2)#  sum of  ( softmax(output array) )^2 
+cost_func = function([z,ans], cost)
 cost_grad = function([z,ans], T.grad(cost, z))
 #need to input the list of z_i, and turn the output into array
             
+learning_rate = 0.0001
+decay=0.9999
+momen=0.9
+
 class DNN(object):
 	def __init__(self, rng=numpy.random.RandomState(1234),  n_in=69, n_out=48, n_hidden=128, layer=2, activation=None):
 	
@@ -69,9 +74,10 @@ class DNN(object):
             last_delta = cost_grad(dnn_output.reshape(48),answer.reshape(48))# the delta of the last layer
             #  update  last layer
             self.MLP[self.layer].update(
-                0.1,
+                momen,
+                learning_rate,
             numpy.dot(last_delta.reshape(48,1), self.MLP[self.layer-1].output.reshape(1,128)),      
-            last_delta.reshape(48))
+            last_delta.reshape(48, 1))
 
             #update layer-1 ~ 0
             for i in range(self.layer-1, -1, -1):
@@ -81,10 +87,12 @@ class DNN(object):
                 pa_pz = numpy.array(map(tanh_grad, self.MLP[i].lin_output.reshape(self.MLP[i].n_out).tolist()))#array of partial a / partial z
                 last_delta = numpy.array([a*b for a,b in zip(W_delta, pa_pz.reshape(128, 1))])
                 self.MLP[i].update(
-                        0.1,
+                        momen,
+                        learning_rate,
                         numpy.dot(last_delta.reshape(128,1),
                         self.MLP[i-1].output.reshape(1, 128) if i!=0 else input.reshape(1,69)),
-                        last_delta.reshape(128))
+                        last_delta.reshape(128, 1))
+            return cost_func(self.MLP[self.layer].output.reshape(48), answer.reshape(48))
                 
 if __name__ == '__main__':
 	DNN() 
