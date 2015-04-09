@@ -9,11 +9,13 @@ import numpy
 
 import theano
 import theano.tensor as T
+from random import shuffle
 from HiddenLayer import HiddenLayer
 from DNN import DNN
 
 file_ark = open('new_train.ark','r')
 file_lab = open('new_train.lab','r')
+test_ark = open('test.ark','r')
 
 n_in = 69
 n_hidden = 128
@@ -36,6 +38,8 @@ label = []
 total = 1124823 - 4823
 
 print 'start reading'
+
+#reading train
 for line in file_lab:
     X = line.split(',')
     label.append(int(X[1]))
@@ -45,33 +49,58 @@ for i in range(total):
     X = map(float, X[1:])
     Y = numpy.array(X)
     ark.append(Y)
+
+with open("Num_to_39")as f:
+    number_map={}
+    for line_number,line in enumerate(f.readlines()): 
+        number_map[line_number]=line  
+
 print 'end reading'
 file_lab.close()
 file_ark.close()
 
 L = numpy.zeros(48)
-i=0
-error = 0
 part = 0
-cost = numpy.zeros(1)
-max_epoch = 3
+max_epoch = 10
+
 
 print 'start'
+
+#train
 for epoch in range(max_epoch):
-    for X, Y in zip(ark, label):
-        L[Y-1] = 1
-        if dnn.forward(X.reshape(69, 1)) != L.argmax():
-            error = error + 1
-        cost = cost + dnn.backward(X, numpy.array(L))
-        L[Y-1] = 0
-        i = i+1
-        if i%10000 == 0:
-            print '{}...Ein:{}/10000'.format(part, error)
-            print '...Cost:{}...'.format((cost)/10000)
-            part = part + 1
-            error = 0
-	    i = 0
-            cost = numpy.zeros(1)
+    shuffle(X)
+    for i in range(X):
+        dnn.forward(X.reshape(69, 1))   
+        dnn.backward(X, numpy.array(L))
+
+#test
+
+#reading test
+for line in test_ark:
+    X = line.split(',')
+    label.append(int(X[1]))
+for i in range(total):
+    line = test_ark.readline()
+    X = line.split()
+    print X[0],
+    X = map(float, X[1:])
+    Y = numpy.array(X)
+    ark.append(Y)
+
+global error
+error=0.0
+
+for X, Y in zip(ark, label):
+    L[Y-1] = 1
+    predict=dnn.forward(X.reshape(69, 1))
+    if predict != L.argmax():
+        error+=1
+    L[Y-1] = 0
+    print number_map[predict]
+
+print str(error)+"/1000000"
+
+
 print 'end'
 
 
