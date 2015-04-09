@@ -49,7 +49,7 @@ print 'end reading'
 file_lab.close()
 file_ark.close()
 
-L = numpy.zeros((48,),dtype=theano.config.floatX)
+L = numpy.zeros(48)
 i=0
 error = 0
 part = 0
