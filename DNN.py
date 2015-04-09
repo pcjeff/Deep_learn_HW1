@@ -24,7 +24,7 @@ cost_grad = function([z,ans], T.grad(cost, z))
             
 learning_rate = 0.0001
 decay=0.9999
-momen=0.9
+momen=1
 
 class DNN(object):
 	def __init__(self, rng=numpy.random.RandomState(1234),  n_in=69, n_out=48, n_hidden=128, layer=2, activation=None):
