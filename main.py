@@ -35,7 +35,7 @@ dnn = DNN(
 
 ark = []
 label = []
-total = 1124823 - 4823
+# total = 1124823 - 4823
 
 print 'start reading'
 
@@ -43,63 +43,48 @@ print 'start reading'
 for line in file_lab:
     X = line.split(',')
     label.append(int(X[1]))
-for i in range(total):
-    line = file_ark.readline()
+for line in file_ark:
     X = line.split()
     X = map(float, X[1:])
     Y = numpy.array(X)
     ark.append(Y)
 
-with open("Num_to_39")as f:
+with open("Num_to_39.map")as f:
     number_map={}
     for line_number,line in enumerate(f.readlines()): 
-        number_map[line_number]=line  
+        number_map[line_number]=line.replace('\n','') 
 
 print 'end reading'
 file_lab.close()
 file_ark.close()
 
 L = numpy.zeros(48)
-part = 0
-max_epoch = 10
+max_epoch = 5
 
 
 print 'start'
 
 #train
 for epoch in range(max_epoch):
-    shuffle(X)
-    for i in range(X):
-        dnn.forward(X.reshape(69, 1))   
-        dnn.backward(X, numpy.array(L))
+    ark_range=range(len(ark))
+    shuffle(ark_range)
+    error=0
+    for i in ark_range:
+        L[label[i]-1] = 1
+        if dnn.forward(ark[i].reshape(69, 1))!=L.argmax():
+		error+=1
+        dnn.backward(ark[i], numpy.array(L))
+        L[label[i]-1] = 0
+    print str(error)+"/per epoch"
 
 #test
 
 #reading test
+
 for line in test_ark:
-    X = line.split(',')
-    label.append(int(X[1]))
-for i in range(total):
-    line = test_ark.readline()
     X = line.split()
-    print X[0],
-    X = map(float, X[1:])
-    Y = numpy.array(X)
-    ark.append(Y)
-
-global error
-error=0.0
-
-for X, Y in zip(ark, label):
-    L[Y-1] = 1
-    predict=dnn.forward(X.reshape(69, 1))
-    if predict != L.argmax():
-        error+=1
-    L[Y-1] = 0
-    print number_map[predict]
-
-print str(error)+"/1000000"
-
+    Y = map(float, X[1:])
+    print X[0] + ',' + str(number_map[dnn.forward(numpy.array(Y).reshape(69, 1))])
 
 print 'end'
 

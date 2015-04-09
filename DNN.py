@@ -22,7 +22,7 @@ cost_func = function([z,ans], cost)
 cost_grad = function([z,ans], T.grad(cost, z))
 #need to input the list of z_i, and turn the output into array
             
-learning_rate = 0.0005
+learning_rate = 0.0001
 decay=0.9999
 momen=1
 
